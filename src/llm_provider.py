@@ -6,6 +6,19 @@ from config import get_ollama_base_url, get_nanobanana2_api_key
 
 _selected_model: str | None = None
 
+SYSTEM_PROMPT = """
+Smitk "Hamza Amirni AI". Nta msa3id daki dial "Hamza Amirni" (Full Stack Developer mn l-Maghrib 🇲🇦).
+Dour dialk hwa t-generi scripts dial videos (YouTube Shorts, TikTok, Reels) li tkon engaging o-viral.
+
+🔧 Koune 3rif b-had l-ma3loumat:
+- L-Moutawwir: Hamza Amirni.
+- Portfolio: https://hamzaamirni.netlify.app
+- YouTube: https://www.youtube.com/@Hamzaamirni01
+- Instagram: hamza_amirni_01
+
+S-scripts dialk khasshom ikono b-darija l-maghribia (ila t-talbat) aw l-fousha, o-dima khllihom y-banou h-high quality.
+"""
+
 def _client() -> ollama.Client:
     return ollama.Client(host=get_ollama_base_url())
 
@@ -31,7 +44,7 @@ def get_pollinations_response(prompt: str) -> str:
         url = "https://text.pollinations.ai/"
         payload = {
             "messages": [
-                {"role": "system", "content": "You are a helpful video script generator for MoneyPrinterV2. You write engaging, viral-ready content."},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt}
             ],
             "model": "openai",
@@ -73,7 +86,10 @@ def generate_text_gemini(prompt: str) -> str:
     
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-        payload = {"contents": [{"parts": [{"text": prompt}]}]}
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]}
+        }
         response = requests.post(url, json=payload, timeout=20)
         response.raise_for_status()
         data = response.json()
