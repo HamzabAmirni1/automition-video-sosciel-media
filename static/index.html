@@ -144,7 +144,8 @@
                     <div class="flex flex-col items-center justify-center space-y-3 py-4 cursor-pointer"
                         onclick="document.getElementById('profileInput').click()">
                         <div class="p-4 bg-purple-500/20 rounded-2xl text-purple-400 group-hover:scale-110 transition">
-                            <i data-lucide="upload-cloud" class="w-8 h-8"></i></div>
+                            <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+                        </div>
                         <p class="font-bold text-gray-200">Upload Firefox Profile</p>
                         <p class="text-xs text-gray-500">Zip your .mozilla or Firefox folder and drop here</p>
                     </div>
@@ -167,50 +168,93 @@
                     </div>
                 </div>
 
-                <!-- Twitter Automation -->
-                <div class="glass p-6 rounded-3xl border border-white/5">
-                    <h2 class="text-xl font-black mb-4 flex items-center"><i data-lucide="twitter"
-                            class="w-6 h-6 mr-2 text-blue-400"></i> Twitter Bot</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-xs font-bold text-gray-500 mb-1 block uppercase">Topic</label>
-                            <input type="text" id="twTopic" value="Artificial Intelligence"
-                                class="w-full bg-black/40 border border-white/10 p-3 rounded-2xl outline-none focus:border-blue-500/50 transition">
-                        </div>
-                        <button onclick="triggerTwitter()" id="twBtn"
-                            class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-black py-4 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/30 transition transform hover:scale-[1.02]">
-                            Post Thread <i data-lucide="send" class="w-5 h-5 ml-2"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
-
-            <!-- Dashboard Terminal -->
-            <div
-                class="lg:col-span-2 flex flex-col glass rounded-3xl border border-white/5 overflow-hidden glow-blue min-h-[600px]">
-                <div class="bg-black/60 p-4 border-b border-white/5 flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <div class="flex space-x-1">
-                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/30"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/30"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/30"></div>
-                        </div>
-                        <span class="text-xs font-black text-gray-400 uppercase tracking-widest ml-4">Live System
-                            Logs</span>
-                    </div>
-                    <button onclick="clearLogs()"
-                        class="text-xs font-bold text-gray-500 hover:text-white transition group">
-                        Clear <i data-lucide="trash-2" class="w-3 h-3 inline ml-1 group-hover:scale-110"></i>
-                    </button>
-                </div>
-                <div id="terminal"
-                    class="flex-grow p-6 font-mono text-sm overflow-y-auto scroll-custom space-y-2 bg-black/20">
-                    <p class="text-purple-400 font-bold">>> Initializing session...</p>
-                    <p class="text-gray-500 italic">No logs yet. Trigger an action or upload a profile.</p>
-                </div>
-            </div>
-
         </div>
+
+        <!-- TikTok/FB Reels card -->
+        <div class="glass p-6 rounded-3xl border border-white/5">
+            <h2 class="text-xl font-black mb-4 flex items-center">
+                <i data-lucide="video" class="w-6 h-6 mr-2 text-pink-500"></i> Omni-Reels
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 mb-1 block uppercase">Niche</label>
+                    <input type="text" id="omniNiche" value="Motivation"
+                        class="w-full bg-black/40 border border-white/10 p-3 rounded-2xl outline-none focus:border-pink-500/50 transition">
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <label
+                        class="flex items-center space-x-1 cursor-pointer p-2 bg-white/5 rounded-xl hover:bg-white/10 transition">
+                        <input type="checkbox" checked id="checkYT" class="accent-red-500">
+                        <span class="text-[10px] font-bold">YT</span>
+                    </label>
+                    <label
+                        class="flex items-center space-x-1 cursor-pointer p-2 bg-white/5 rounded-xl hover:bg-white/10 transition">
+                        <input type="checkbox" checked id="checkTK" class="accent-pink-500">
+                        <span class="text-[10px] font-bold">TK</span>
+                    </label>
+                    <label
+                        class="flex items-center space-x-1 cursor-pointer p-2 bg-white/5 rounded-xl hover:bg-white/10 transition">
+                        <input type="checkbox" checked id="checkFB" class="accent-blue-500">
+                        <span class="text-[10px] font-bold">FB</span>
+                    </label>
+                </div>
+                <button onclick="triggerOmni()" id="omniBtn"
+                    class="w-full bg-gradient-to-r from-pink-600 to-purple-500 hover:from-pink-500 hover:to-purple-400 text-white font-black py-4 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-900/30 transition transform hover:scale-[1.02]">
+                    Post Everywhere <i data-lucide="layers" class="w-5 h-5 ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Terminal -->
+    <div
+        class="lg:col-span-2 flex flex-col glass rounded-3xl border border-white/5 overflow-hidden glow-blue min-h-[600px]">
+        <div class="bg-black/60 p-4 border-b border-white/5 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="flex space-x-1">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500/30"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/30"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-500/30"></div>
+                </div>
+                <span class="text-xs font-black text-gray-400 uppercase tracking-widest ml-4">Live System
+                    Logs</span>
+            </div>
+            <button onclick="clearLogs()" class="text-xs font-bold text-gray-500 hover:text-white transition group">
+                Clear <i data-lucide="trash-2" class="w-3 h-3 inline ml-1 group-hover:scale-110"></i>
+            </button>
+        </div>
+        <div id="terminal" class="flex-grow p-6 font-mono text-sm overflow-y-auto scroll-custom space-y-2 bg-black/20">
+            <p class="text-purple-400 font-bold">>> Initializing session...</p>
+            <p class="text-gray-500 italic">No logs yet. Trigger an action or upload a profile.</p>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Social Links (Hamza Amirni) -->
+    <div class="mt-8 border-t border-white/10 pt-8 flex flex-wrap justify-center gap-6">
+        <a href="https://hamzaamirni.netlify.app" target="_blank"
+            class="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="globe" class="w-5 h-5"></i>
+            <span class="text-sm">Portfolio</span>
+        </a>
+        <a href="https://www.facebook.com/6kqzuj3y4e" target="_blank"
+            class="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="facebook" class="w-5 h-5"></i>
+            <span class="text-sm">Facebook</span>
+        </a>
+        <a href="https://www.youtube.com/@Hamzaamirni01" target="_blank"
+            class="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="youtube" class="w-5 h-5"></i>
+            <span class="text-sm">YouTube</span>
+        </a>
+        <a href="https://instagram.com/hamza_amirni_01" target="_blank"
+            class="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="instagram" class="w-5 h-5"></i>
+            <span class="text-sm">Instagram</span>
+        </a>
+    </div>
     </div>
 
     <!-- UI Interactions -->
@@ -286,6 +330,36 @@
                 alert("Request failed: " + e.message);
             } finally {
                 btn.innerHTML = 'Post Thread <i data-lucide="send" class="w-5 h-5 ml-2"></i>';
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+
+        async function triggerOmni() {
+            const btn = document.getElementById('omniBtn');
+            const niche = document.getElementById('omniNiche').value;
+            const platforms = [];
+            if (document.getElementById('checkYT').checked) platforms.push('youtube');
+            if (document.getElementById('checkTK').checked) platforms.push('tiktok');
+            if (document.getElementById('checkFB').checked) platforms.push('facebook');
+
+            if (platforms.length === 0) return alert("Select at least one platform!");
+
+            btn.innerHTML = '<span class="pulsing">Generating...</span>';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('niche', niche);
+            formData.append('platforms', platforms.join(','));
+
+            try {
+                const res = await fetch('/omni/generate', { method: 'POST', body: formData });
+                const data = await res.json();
+                alert(data.message);
+            } catch (e) {
+                alert("Request failed: " + e.message);
+            } finally {
+                btn.innerHTML = 'Post Everywhere <i data-lucide="layers" class="w-5 h-5 ml-2"></i>';
                 btn.disabled = false;
                 lucide.createIcons();
             }
