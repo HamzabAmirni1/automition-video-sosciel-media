@@ -377,17 +377,47 @@ class YouTube:
                 warning(f"Failed to generate image with Nano Banana 2 API: {str(e)}")
             return None
 
-    def generate_image(self, prompt: str) -> str:
+    def generate_image_pollinations(self, prompt: str) -> str:
         """
-        Generates an AI Image based on the given prompt using Nano Banana 2.
-
-        Args:
-            prompt (str): Reference for image generation
-
+        Generates an AI Image using Pollinations AI (Free, no key).
         Returns:
             path (str): The path to the generated image.
         """
-        return self.generate_image_nanobanana2(prompt)
+        print(f"Generating Image using Pollinations AI (Flux): {prompt}")
+        width, height = 1024, 1024
+        aspect = get_nanobanana2_aspect_ratio()
+        if aspect == "9:16":
+            width, height = 1080, 1920
+        elif aspect == "16:9":
+            width, height = 1920, 1080
+
+        seed = random.randint(1, 1000000)
+        url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width={width}&height={height}&seed={seed}&nologo=true&model=flux"
+        
+        try:
+            response = requests.get(url, timeout=60)
+            response.raise_for_status()
+            return self._persist_image(response.content, "Pollinations AI")
+        except Exception as e:
+            if get_verbose():
+                warning(f"Failed to generate image with Pollinations AI: {str(e)}")
+            return None
+
+    def generate_image(self, prompt: str) -> str:
+        """
+        Generates an AI Image based on the given prompt.
+        Tries Gemini first, then falls back to Pollinations AI.
+        """
+        # 1. Try Nano Banana (Gemini)
+        res = self.generate_image_nanobanana2(prompt)
+        if res: return res
+        
+        # 2. Try Pollinations AI (Free)
+        res = self.generate_image_pollinations(prompt)
+        if res: return res
+        
+        error("All image generation providers failed.")
+        return None
 
     def generate_script_to_speech(self, tts_instance: TTS) -> str:
         """

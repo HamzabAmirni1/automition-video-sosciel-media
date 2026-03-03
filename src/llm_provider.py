@@ -1,6 +1,7 @@
 import ollama
 import os
 import requests
+import random
 from config import get_ollama_base_url, get_nanobanana2_api_key
 
 _selected_model: str | None = None
@@ -9,11 +10,6 @@ def _client() -> ollama.Client:
     return ollama.Client(host=get_ollama_base_url())
 
 def list_models() -> list[str]:
-    """
-    Lists all models available on the local Ollama server.
-    Returns:
-        models (list[str]): Sorted list of model names.
-    """
     try:
         response = _client().list()
         return sorted(m.model for m in response.models)
@@ -21,62 +17,92 @@ def list_models() -> list[str]:
         return []
 
 def select_model(model: str) -> None:
-    """
-    Sets the model to use for all subsequent generate_text calls.
-    Args:
-        model (str): An Ollama model name.
-    """
     global _selected_model
     _selected_model = model
 
 def get_active_model() -> str | None:
-    """
-    Returns the currently selected model, or None if none has been selected.
-    """
     return _selected_model
 
+def get_pollinations_response(prompt: str) -> str:
+    """
+    Fetches response from Pollinations AI (Free, no key).
+    """
+    try:
+        url = "https://text.pollinations.ai/"
+        payload = {
+            "messages": [
+                {"role": "system", "content": "You are a helpful video script generator for MoneyPrinterV2. You write engaging, viral-ready content."},
+                {"role": "user", "content": prompt}
+            ],
+            "model": "openai",
+            "seed": random.randint(1, 1000)
+        }
+        response = requests.post(url, json=payload, timeout=15)
+        response.raise_for_status()
+        text = response.text.strip()
+        # Clean up ad footer if exists
+        if "*Support Pollinations.AI:*" in text:
+            text = text.split("*Support Pollinations.AI:*")[0].strip()
+        return text
+    except Exception as e:
+        print(f"Pollinations AI failed: {e}")
+        return None
+
+def get_lumin_response(prompt: str) -> str:
+    """
+    Fetches response from Lumin AI (Free, no key).
+    """
+    try:
+        url = "https://luminai.my.id/"
+        payload = {
+            "content": prompt,
+            "user": "moneyprinter_user"
+        }
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("result") or data.get("response")
+    except Exception as e:
+        print(f"Lumin AI failed: {e}")
+        return None
+
 def generate_text_gemini(prompt: str) -> str:
-    """
-    Generates text using Gemini Pro (Flash) API as a fallback.
-    """
     api_key = get_nanobanana2_api_key()
     if not api_key:
-        raise RuntimeError("GEMINI_API_KEY or nanobanana2_api_key not found. Required for cloud deployment.")
+        return None
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}]
-    }
-    
-    response = requests.post(url, json=payload)
-    response.raise_for_status()
-    data = response.json()
-    return data['candidates'][0]['content']['parts'][0]['text'].strip()
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+        payload = {"contents": [{"parts": [{"text": prompt}]}]}
+        response = requests.post(url, json=payload, timeout=20)
+        response.raise_for_status()
+        data = response.json()
+        return data['candidates'][0]['content']['parts'][0]['text'].strip()
+    except Exception as e:
+        print(f"Gemini failed: {e}")
+        return None
 
 def generate_text(prompt: str, model_name: str = None) -> str:
-    """
-    Generates text using the local Ollama server or Gemini API as a cloud fallback.
-    """
     model = model_name or _selected_model
     
-    # Cloud mode: If no Ollama model selected or Ollama seems unavailable, fallback to Gemini
-    if not model or model.startswith("gemini"):
+    # 1. Try Ollama if model provided and local
+    if model and not model.startswith("gemini"):
         try:
-            return generate_text_gemini(prompt)
-        except Exception as e:
-            if not model:
-                raise RuntimeError(f"Failed to generate text with Gemini fallback: {e}")
-    
-    # Try Ollama if model provided
-    try:
-        response = _client().chat(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return response["message"]["content"].strip()
-    except Exception as e:
-        # Final fallback to Gemini for reliability in cloud environments
-        try:
-            return generate_text_gemini(prompt)
+            response = _client().chat(model=model, messages=[{"role": "user", "content": prompt}])
+            return response["message"]["content"].strip()
         except:
-            raise e # Raise original Ollama error if Gemini also fails
+            pass # Fall through to free cloud APIs
+            
+    # 2. Try Pollinations AI (Free, No Key)
+    res = get_pollinations_response(prompt)
+    if res: return res
+    
+    # 3. Try Lumin AI (Free, No Key)
+    res = get_lumin_response(prompt)
+    if res: return res
+    
+    # 4. Try Gemini (Needs Key)
+    res = generate_text_gemini(prompt)
+    if res: return res
+    
+    raise RuntimeError("All AI providers failed. Please check your internet connection or API keys.")
